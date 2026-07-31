@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-souk-paper bg-grain text-souk-ink;
+}
+
+::selection {
+  background-color: theme('colors.souk.gold');
+  color: theme('colors.souk.ink');
+}
+
+/* Perforated "ticket" edge used on price tags / product highlight cards */
+.ticket-edge {
+  position: relative;
+}
+.ticket-edge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px dashed theme('colors.souk.ink / 15%');
+  border-radius: inherit;
+  pointer-events: none;
+}
