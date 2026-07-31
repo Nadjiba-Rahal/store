@@ -56,13 +56,18 @@ async function parseShippingChartWithVision(imageDataUrl: string, courierName: s
   for (const model of VISION_MODELS) {
     try {
       console.log(`[OCR] Extracting rates with model: ${model}`);
+      
+      // Dynamic fallback so it works both locally and on Vercel
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://blush-store.vercel.app';
+      const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Blush';
+
       const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': 'http://localhost:3000',
-          'X-Title': 'Sela Marketplace',
+          'HTTP-Referer': appUrl,
+          'X-Title': appName,
         },
         body: JSON.stringify({
           model,
