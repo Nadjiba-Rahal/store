@@ -1,172 +1,58 @@
-# Boutique en ligne — single-store e-commerce (Algérie) 🇩🇿
+E-Commerce Platform
 
-Une boutique en ligne complète pour **un seul commerçant** : les clients
-parcourent les produits, ajoutent au panier, et commandent avec **paiement
-à la livraison (COD)** — le mode de paiement dominant en Algérie (~95%
-des commandes en ligne, cartes bancaires très peu utilisées). Le
-propriétaire gère tout depuis un tableau de bord protégé.
+[![Next.js](https://img.shields.io/badge/Next.js-14_App_Router-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB_Atlas-Mongoose-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=for-the-badge&logo=vercel)](https://blush-store.vercel.app)
 
-Ce n'est **pas** un marketplace multi-vendeurs : une seule boutique par
-déploiement. Pour vendre le concept à plusieurs clients, on redéploie ce
-même projet une fois par client (nouveau dépôt / nouveau projet Vercel),
-et chacun personnalise son thème, son nom et ses produits indépendamment.
+A single-tenant, white-label e-commerce solution engineered specifically for high-volume Cash on Delivery (COD) markets.
 
-## Ce qui a changé vs. l'ancienne version
+This platform provides single-merchant store deployments designed for regions where local delivery networks (e.g., Yalidine, Maystro) and COD workflows dominate online retail. Built using Next.js 14 App Router, TypeScript, and MongoDB, it offers isolated store instances that can be customized and deployed independently per merchant.
 
-- **Fini le multi-vendeurs.** L'ancienne version laissait n'importe qui
-  créer un compte + une boutique, et les clients ne pouvaient que
-  "commander sur WhatsApp" sans panier ni suivi — inutilisable pour un
-  vrai commerce. Maintenant : une seule boutique, un seul compte admin.
-- **Panier + tunnel de commande réels** : panier persistant (localStorage),
-  tiroir panier, page de commande avec nom / téléphone / wilaya / commune /
-  adresse, choix livraison à domicile ou bureau (stop desk), calcul
-  automatique des frais.
-- **Paiement à la livraison** : pas de passerelle de paiement à configurer
-  (aucune carte ne fonctionne bien en Algérie pour ce type de commerce) —
-  le client paie cash à la réception, comme Jumia, Ouedkniss, ou toute
-  boutique Instagram qui utilise Yalidine/Maystro.
-- **Gestion des commandes** : les commandes arrivent dans le tableau de
-  bord (statuts : en attente → confirmée → expédiée → livrée / annulée),
-  avec décrément automatique du stock.
-- **Inscription à usage unique** : `/register` ne fonctionne qu'une seule
-  fois (tant qu'aucune boutique n'existe) — ça crée le compte admin et
-  configure la boutique. Après ça, la route se ferme d'elle-même.
-- **Produits enrichis** : stock, prix barré (réduction), mise en avant
-  sur la page d'accueil.
-- **Paramètres boutique complets** : logo, nom, description, WhatsApp,
-  Instagram/Facebook, wilaya d'expédition, frais de livraison
-  (domicile / bureau), seuil de livraison gratuite.
+---
 
-## 🎨 Personnaliser pour un client
+## Technical Features & System Architecture
 
-Tout ce qui est spécifique à un client se configure **sans toucher au
-code** :
-1. Déployez le projet (voir plus bas), ouvrez `/register` une seule fois
-   pour créer le compte admin + la boutique.
-2. Dans `/dashboard/settings`, changez le nom, le logo, la description,
-   le numéro WhatsApp, la wilaya, les frais de livraison.
-3. Ajoutez les produits depuis `/dashboard/products/new`.
+* **Stateful Client-Side Cart**: Custom reactive cart built on browser storage, supporting real-time weight/item calculations and local logistics fees (Home vs. Stop-Desk delivery).
+* **Single-Tenant Security Architecture**: Includes a self-locking `/register` route that closes automatically upon initial store provision, restricting administrative access strictly to the initial merchant account.
+* **Localized Logistics Integration**: Built-in support for 58 Algerian Wilayas and Communes, handling dynamic shipping calculations and automated inventory decrements upon order submission.
+* **AI-Assisted Content Pipeline**: Integrated with OpenRouter / Google Gemini to generate localized, SEO-optimized product descriptions directly inside the merchant dashboard.
+* **Route Protection & Media Pipeline**: Middleware-protected administrative routes via NextAuth.js (JWT) with optimized media hosting delivered through Cloudinary APIs.
 
-Pour un changement plus profond (thème de couleurs, polices, nom de
-domaine), modifiez `tailwind.config.js` (couleurs `souk.*`) et
-`src/app/layout.tsx` (polices). Chaque client = un dépôt Git séparé
-(fork ce projet), pour garder les personnalisations indépendantes.
+---
 
-## 🚀 Installation
+## Tech Stack
 
-### Étape 0 — Prérequis
-- Node.js 20+ → https://nodejs.org
-- Git → https://git-scm.com/downloads
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend Framework** | Next.js 14 (App Router) | Server-Side Rendering (SSR) & Server Actions |
+| **Language** | TypeScript | Type safety across models, API interfaces, and UI |
+| **Styling** | Tailwind CSS | Utility-first component design & custom design tokens |
+| **Authentication** | NextAuth.js | JWT session management & secure credential hashing |
+| **Database** | MongoDB Atlas / Mongoose | Document-oriented data modeling |
+| **AI Integration** | OpenRouter API / Gemini | Automated product copy generation |
+| **Media Delivery** | Cloudinary API | Cloud image optimization and distribution |
+| **Hosting & CI/CD** | Vercel | Production deployment and edge hosting |
 
-### Étape 1 — Comptes gratuits à créer
+---
 
-**MongoDB Atlas**
-1. https://cloud.mongodb.com → Sign Up
-2. Créer un cluster gratuit (M0, région Paris ou Francfort)
-3. Database Access → créer un utilisateur (ex: `sela_user`)
-4. Network Access → Add IP → `0.0.0.0/0` (autoriser depuis n'importe où)
-5. Connect → Drivers → copier l'URI de connexion
+## Directory Structure
 
-**Cloudinary** (photos produits) — recommandé
-1. https://cloudinary.com → Sign Up
-2. Dashboard → copier Cloud Name, API Key, API Secret
-
-**Google Gemini** (génération IA de descriptions) — optionnel
-1. https://aistudio.google.com/app/apikey → Create API Key
-
-**Vercel** (déploiement)
-1. https://vercel.com → Sign Up with GitHub
-
-### Étape 2 — Installer
-
-```bash
-cd sela-marketplace
-npm install
-```
-
-### Étape 3 — Variables d'environnement
-
-```bash
-cp .env.example .env.local
-```
-
-Remplissez `.env.local`. Pour générer `NEXTAUTH_SECRET` :
-
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-```
-
-### Étape 4 — Lancer en local
-
-```bash
-npm run dev
-```
-
-Ouvrez http://localhost:3000/register pour créer le compte admin et
-configurer la boutique (une seule fois).
-
-### Étape 5 — Déployer sur Vercel
-
-1. Poussez le code sur GitHub (un dépôt par client)
-2. https://vercel.com/new → Import le repo
-3. Ajoutez toutes les variables de `.env.local` dans Environment
-   Variables (⚠️ `NEXTAUTH_URL` doit pointer vers le domaine Vercel réel,
-   ex. `https://nom-client.vercel.app`)
-4. Deploy, puis ouvrez `/register` une seule fois sur le site en ligne
-
-## 📁 Structure du projet
-
-```
+```plain
 src/
 ├── app/
-│   ├── page.tsx                    # Page d'accueil (vitrine)
-│   ├── products/                   # Liste + détail produit (public)
-│   ├── checkout/                   # Tunnel de commande (COD)
-│   ├── order-confirmation/[id]/    # Confirmation de commande (client)
-│   ├── (auth)/login/               # Connexion admin
-│   ├── (auth)/register/            # Configuration initiale (une fois)
-│   ├── dashboard/                  # Espace admin (protégé)
-│   │   ├── page.tsx                # Statistiques
-│   │   ├── orders/                 # Gestion des commandes
-│   │   ├── products/               # CRUD produits, IA, upload photo
-│   │   └── settings/               # Paramètres boutique + livraison
-│   └── api/                        # Routes API (auth, produits, commandes, store, upload, ai)
-├── components/                     # UI, panier, cartes produit...
-├── constants/                      # wilayas (58), catégories
-├── lib/                            # mongodb, auth, store, gemini, cloudinary, utils
-├── models/                         # User, Shop (paramètres boutique), Product, Order
-└── middleware.ts                   # Protège /dashboard/*
-```
-
-## 🧰 Stack
-
-| Couche       | Techno                          |
-|--------------|----------------------------------|
-| Frontend     | Next.js 14 (App Router), Tailwind CSS |
-| Auth         | NextAuth.js (Credentials, JWT)   |
-| Base de données | MongoDB Atlas + Mongoose      |
-| IA           | Google Gemini 1.5 Flash (optionnel) |
-| Images       | Cloudinary                       |
-| Paiement     | Cash on Delivery (aucune passerelle) |
-| Déploiement  | Vercel                           |
-
-## 💵 Comment fonctionne une commande
-
-1. Le client ajoute des produits au panier (persistant, sans compte requis).
-2. À la page `/checkout`, il choisit livraison à domicile ou bureau, saisit
-   ses coordonnées, et confirme.
-3. La commande est enregistrée avec le statut **en attente**, le stock est
-   décrémenté, et le client voit une page de confirmation (avec un bouton
-   WhatsApp optionnel pour confirmer directement avec le vendeur).
-4. Le vendeur suit et met à jour le statut de chaque commande depuis
-   `/dashboard/orders`.
-5. Le client paie cash au livreur à la réception — aucune carte, aucune
-   commission, aucune passerelle de paiement à configurer.
-
-## Prochaines étapes possibles
-
-- Intégration directe avec l'API Yalidine/Maystro (création de bordereau automatique)
-- Notifications WhatsApp automatiques au vendeur à chaque nouvelle commande
-- Avis clients par produit
-- Multi-langue (arabe / français)
-- Thèmes de couleurs prêts à l'emploi par secteur (mode, alimentation, électronique...)
+│   ├── page.tsx                  # Public storefront landing page
+│   ├── products/                 # Product catalog and dynamic detail routes
+│   ├── checkout/                 # Localized COD order fulfillment flow
+│   ├── order-confirmation/[id]/  # Post-purchase receipt page
+│   ├── (auth)/                   # Authentication & initial setup logic
+│   ├── dashboard/                # Admin administrative portal
+│   │   ├── orders/               # Order lifecycle & inventory tracking
+│   │   ├── products/             # Inventory CRUD and AI description tools
+│   │   └── settings/             # Logistics configuration & branding
+│   └── api/                      # RESTful backend API routes
+├── components/                   # Reusable UI components (Cart Drawer, Modals)
+├── constants/                    # Logistics datasets (58 Wilayas, categories)
+├── lib/                          # MongoDB, Gemini, Cloudinary, and Auth utilities
+└── middleware.ts                 # NextAuth admin route guard
